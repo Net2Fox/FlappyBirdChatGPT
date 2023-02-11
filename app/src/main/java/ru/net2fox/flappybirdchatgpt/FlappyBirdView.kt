@@ -22,6 +22,7 @@ class FlappyBirdView(context: Context?, attrs: AttributeSet?) : View(context, at
 
     private var gameOverBitMap: Bitmap? = null
 
+
     private val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
     val displayMetrics = DisplayMetrics()
