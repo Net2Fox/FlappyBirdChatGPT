@@ -199,28 +199,43 @@ class FlappyBirdView(context: Context?, attrs: AttributeSet?) : View(context, at
 
     private inner class Background {
 
-        private val bgImage: Bitmap = getScaledBitMap(R.drawable.flappy_bird_background, displayMetrics.widthPixels, displayMetrics.heightPixels)
+        private val bgImage: Bitmap = getScaledBitMap(R.drawable.flappy_bird_background, displayMetrics.widthPixels, displayMetrics.heightPixels + 100)
         private var bgX: Int = 0
         private var bgY: Int = 0
 
         fun update() {
             bgX -= 5
-            if (bgX < -width) {
+            if (bgX + bgImage.width <= 0) {
                 bgX = 0
             }
         }
 
         fun draw(canvas: Canvas) {
-            canvas.drawBitmap(bgImage, bgX.toFloat(), bgY.toFloat(), null)
-            canvas.drawBitmap(bgImage, bgX.toFloat() + width, bgY.toFloat(), null)
+            for (i in 0..((width / bgImage.width) + 1)) {
+                canvas.drawBitmap(bgImage, (bgX + (i * bgImage.width)).toFloat(), bgY.toFloat(), null)
+            }
         }
     }
 
-    private fun getScaledBitMap(resourceId: Int, width: Int, height: Int): Bitmap {
-        val bitmap = BitmapFactory.decodeResource(context.resources, resourceId)
-        return Bitmap.createScaledBitmap(bitmap, width, height, false)
-    }
+    private fun getScaledBitMap(resourceId: Int, targetWidth: Int, targetHeight: Int): Bitmap {
+        val options = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
+        BitmapFactory.decodeResource(context.resources, resourceId, options)
+        val sourceWidth = options.outWidth
+        val sourceHeight = options.outHeight
 
+        // Calculate aspect ratio
+        val aspectRatio = sourceWidth.toFloat() / sourceHeight.toFloat()
+
+        // Calculate target width and height while maintaining aspect ratio
+        var targetWidth = targetWidth
+        var targetHeight = targetHeight
+        targetWidth = (aspectRatio * targetHeight).toInt()
+        targetHeight = (targetWidth / aspectRatio).toInt()
+
+        return Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.resources, resourceId), targetWidth, targetHeight, false)
+    }
 
     private fun getBitmap(resourceId: Int): Bitmap {
         return BitmapFactory.decodeResource(resources, resourceId)
