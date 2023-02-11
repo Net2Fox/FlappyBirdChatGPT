@@ -21,6 +21,12 @@ class FlappyBirdView(context: Context?, attrs: AttributeSet?) : View(context, at
     private var background: Background? = null
 
     private var gameOverBitMap: Bitmap? = null
+    val darkeningPaint = Paint().apply {
+        color = Color.BLACK
+        alpha = 128
+        style = Paint.Style.FILL
+    }
+
 
 
     private val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -104,10 +110,10 @@ class FlappyBirdView(context: Context?, attrs: AttributeSet?) : View(context, at
 
     override fun onDraw(canvas: Canvas) {
         background!!.draw(canvas)
-        background!!.draw(canvas)
         pipes.draw(canvas)
         bird.draw(canvas)
         if (!isPlaying) {
+            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), darkeningPaint)
             canvas.drawBitmap(gameOverBitMap!!, (width - gameOverBitMap!!.width) / 2.toFloat(), (height - gameOverBitMap!!.height) / 2.toFloat(), null)
         }
     }
