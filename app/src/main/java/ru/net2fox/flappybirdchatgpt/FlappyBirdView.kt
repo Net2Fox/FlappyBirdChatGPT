@@ -27,8 +27,6 @@ class FlappyBirdView(context: Context?, attrs: AttributeSet?) : View(context, at
         style = Paint.Style.FILL
     }
 
-
-
     private val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
     val displayMetrics = DisplayMetrics()
@@ -49,14 +47,15 @@ class FlappyBirdView(context: Context?, attrs: AttributeSet?) : View(context, at
         }
     }
 
-    private var isPlaying = true
+    private var isPlaying = false
+    private var isLosing = false
 
     private val FRAME_PERIOD = 17 // desired frame rate in milliseconds
 
     private var touchAction = MotionEvent.ACTION_UP
 
     override fun run() {
-        while (isPlaying) {
+        while (isPlaying && !isLosing) {
             val startTime = System.currentTimeMillis()
 
             update()
@@ -80,6 +79,7 @@ class FlappyBirdView(context: Context?, attrs: AttributeSet?) : View(context, at
         pipes.x = width
         pipes.y = height
         isPlaying = true
+        isLosing = false
         Thread(this).start()
     }
 
@@ -87,6 +87,7 @@ class FlappyBirdView(context: Context?, attrs: AttributeSet?) : View(context, at
         // Check if the bird has collided with the top or bottom of the screen
         if (bird.y + bird.height >= height || bird.y <= 0) {
             isPlaying = false
+            isLosing = true
             Thread(this).interrupt()
             return
         }
@@ -102,8 +103,8 @@ class FlappyBirdView(context: Context?, attrs: AttributeSet?) : View(context, at
             // Check for a collision between the bird and the top or bottom pipe
             if (birdRect.intersect(topPipeRect) || birdRect.intersect(bottomPipeRect)) {
                 isPlaying = false
+                isLosing = true
                 Thread(this).interrupt()
-
             }
 
     }
@@ -112,7 +113,7 @@ class FlappyBirdView(context: Context?, attrs: AttributeSet?) : View(context, at
         background!!.draw(canvas)
         pipes.draw(canvas)
         bird.draw(canvas)
-        if (!isPlaying) {
+        if (isLosing) {
             canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), darkeningPaint)
             canvas.drawBitmap(gameOverBitMap!!, (width - gameOverBitMap!!.width) / 2.toFloat(), (height - gameOverBitMap!!.height) / 2.toFloat(), null)
         }
@@ -149,7 +150,6 @@ class FlappyBirdView(context: Context?, attrs: AttributeSet?) : View(context, at
 
         var velocity = 0f
         var gravity = 2f
-
 
         init {
             height = bitmap.height
