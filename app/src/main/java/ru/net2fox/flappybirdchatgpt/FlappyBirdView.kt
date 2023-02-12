@@ -89,6 +89,7 @@ class FlappyBirdView(context: Context?, attrs: AttributeSet?) : View(context, at
         pipes.y = height
         isPlaying = true
         isLosing = false
+        isGetPoint = false
         score = 0
         Thread(this).start()
     }
@@ -125,27 +126,20 @@ class FlappyBirdView(context: Context?, attrs: AttributeSet?) : View(context, at
             (bird.x + bird.width).toInt(), (bird.y + bird.height).toInt()
         )
 
-        val gapHeightPipeRect = Rect(pipes.x, pipes.y - pipes.gapDistance - pipes.bitmapBottom.height, pipes.x + pipes.bitmapTop.width / 2, pipes.y + pipes.gapDistance)
+        val gapHeightPipeRect = Rect(pipes.x, pipes.y - pipes.gapDistance - pipes.bitmapBottom.height, pipes.x + pipes.bitmapTop.width, pipes.y + pipes.gapDistance)
         // Check for a collision between the bird and pipe
         if (birdRect.intersect(gapHeightPipeRect) && !isGetPoint) {
-            score++
             isGetPoint = true
         } else if (!birdRect.intersect(gapHeightPipeRect) && isGetPoint) {
+            score++
             isGetPoint = false
         }
     }
 
-    @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas) {
         background.draw(canvas)
         pipes.draw(canvas)
         bird.draw(canvas)
-        //val paint = Paint().apply {
-        //    color = Color.RED
-        //    style = Paint.Style.FILL
-        //}
-        //val gapHeightPipeRect = Rect(pipes.x + 100, pipes.y - pipes.gapDistance - pipes.bitmapBottom.height, pipes.x + pipes.bitmapTop.width / 2, pipes.y + pipes.gapDistance)
-        //canvas.drawRect(gapHeightPipeRect, paint)
         canvas.drawText("Score: $score", 20f * displayMetrics.density, 40f * displayMetrics.density, scorePaint)
         if (isLosing) {
             canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), darkeningPaint)
