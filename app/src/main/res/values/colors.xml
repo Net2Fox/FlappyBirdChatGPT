@@ -61,4 +61,6 @@
     <color name="md_theme_dark_surfaceTint">#BCC2FF</color>
     <color name="md_theme_dark_outlineVariant">#46464F</color>
     <color name="md_theme_dark_scrim">#000000</color>
+
+    <color name="status_bar_color_as_background">#B83DBA</color>
 </resources>
